@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "lint": "eslint -c config/.eslintrc.json **/*.js",
-    "test": "mocha --timeout 10000"
+    "test": "mocha --timeout 10000 --exit"
   },
   "pre-commit": [
     "lint",
