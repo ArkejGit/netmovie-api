@@ -1,22 +1,18 @@
 'use strict';
 
-const chai = require('chai');
-const chaiHttp = require('chai-http');
+const request = require('supertest');
 const app = require('../app');
-
-const should = chai.should();
-
-chai.use(chaiHttp);
 
 // MOVIES
 describe('movies', () => {
 
   describe('/GET', () => {
     it('it should be successful GET request', (done) => {
-      chai.request(app)
+      request(app)
         .get('/movies')
-        .end((err, res) => {
-          res.should.have.status(200);
+        .expect(200)
+        .end(function(err, res) {
+          if (err) return done(err);
           done();
         });
     });
@@ -24,10 +20,11 @@ describe('movies', () => {
 
   describe('/POST', () => {
     it('it should be successful POST request', (done) => {
-      chai.request(app)
-        .get('/movies')
-        .end((err, res) => {
-          res.should.have.status(200);
+      request(app)
+        .post('/movies')
+        .expect(200)
+        .end(function(err, res) {
+          if (err) return done(err);
           done();
         });
     });
@@ -40,10 +37,11 @@ describe('comments', () => {
 
   describe('/GET', () => {
     it('it should be successful GET request', (done) => {
-      chai.request(app)
+      request(app)
         .get('/comments')
-        .end((err, res) => {
-          res.should.have.status(200);
+        .expect(200)
+        .end(function(err, res) {
+          if (err) return done(err);
           done();
         });
     });
@@ -51,10 +49,11 @@ describe('comments', () => {
 
   describe('/POST', () => {
     it('it should be successful POST request', (done) => {
-      chai.request(app)
-        .get('/comments')
-        .end((err, res) => {
-          res.should.have.status(200);
+      request(app)
+        .post('/comments')
+        .expect(200)
+        .end(function(err, res) {
+          if (err) return done(err);
           done();
         });
     });
