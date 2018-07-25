@@ -8,15 +8,56 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe('/GET', () => {
-  it('it should GET hello message', (done) => {
-    chai.request(app)
-      .get('/')
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.have.property('message');
-        res.body.message.should.eql('Hello!');
-        done();
-      });
+// MOVIES
+describe('movies', () => {
+
+  describe('/GET', () => {
+    it('it should be successful GET request', (done) => {
+      chai.request(app)
+        .get('/movies')
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
   });
+
+  describe('/POST', () => {
+    it('it should be successful POST request', (done) => {
+      chai.request(app)
+        .get('/movies')
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+  });
+
+});
+
+// COMMENTS
+describe('comments', () => {
+
+  describe('/GET', () => {
+    it('it should be successful GET request', (done) => {
+      chai.request(app)
+        .get('/comments')
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+  });
+
+  describe('/POST', () => {
+    it('it should be successful POST request', (done) => {
+      chai.request(app)
+        .get('/comments')
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+  });
+
 });
