@@ -2,6 +2,7 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -15,6 +16,10 @@ mongoose.connect('mongodb://localhost:27017/netmovie', {
   .catch(err => console.log(err));
 
 app.get('/', (req, res) => res.json({ message: 'Hello!' }));
+
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // Load routes
 const movies = require('./routes/movies');
