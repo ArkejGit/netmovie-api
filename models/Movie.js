@@ -1,8 +1,8 @@
 'use strict';
 
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
 
-const MovieSchema = new Schema({
+const MovieSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -13,4 +13,4 @@ const MovieSchema = new Schema({
   genre: String,
 });
 
-model('movies', MovieSchema);
+mongoose.model('movies', MovieSchema);
