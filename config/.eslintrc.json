@@ -18,7 +18,8 @@
         "files": "*.test.js",
         "rules": {
             "no-unused-vars": 0,
-            "no-undef": 0
+            "no-undef": 0,
+            "padded-blocks": 0
         }
     }
 }
