@@ -16,4 +16,18 @@ module.exports = {
     return errors;
   },
 
+  commentsPostRequestErrors: (req) => {
+    const errors = [];
+
+    if (!req.body.movieID) {
+      errors.push('Request should contain movieID');
+    }
+
+    if (!req.body.text) {
+      errors.push('Request should contain comment text');
+    }
+
+    return errors;
+  },
+
 };

@@ -8,21 +8,27 @@ const mongoose = require('mongoose');
 const app = require('../app');
 const db = require('../config/database');
 
+require('../models/Comment');
+
+const Comment = mongoose.model('comments');
+
+async function connectToDB() {
+  await mongoose.connect(db.mongoURL, { useNewUrlParser: true });
+}
+
+function clearCollectionDB(collectionName) {
+  mongoose.connection.db.listCollections({ name: collectionName })
+    .next((e, collinfo) => {
+      if (collinfo) {
+        mongoose.connection.collections[collinfo.name].drop();
+      }
+    });
+}
+
 // MOVIES
 describe('movies', () => {
 
-  function clearCollectionDB(collectionName) {
-    mongoose.connection.db.listCollections({ name: collectionName })
-      .next((e, collinfo) => {
-        if (collinfo) {
-          mongoose.connection.collections[collinfo.name].drop((err) => {
-            if (err) console.log(err);
-          });
-        }
-      });
-  }
-
-  before(() => mongoose.connect(db.mongoURL, { useNewUrlParser: true }));
+  before(() => connectToDB());
 
   after(() => clearCollectionDB('movies'));
 
@@ -131,6 +137,14 @@ describe('movies', () => {
 // COMMENTS
 describe('comments', () => {
 
+  before(() => connectToDB());
+
+  after(() => {
+    clearCollectionDB('comments');
+    clearCollectionDB('movies');
+  });
+
+  // GET
   describe('/GET', () => {
     it('it should be successful GET request', (done) => {
       request(app)
@@ -143,14 +157,83 @@ describe('comments', () => {
     });
   });
 
+  // POST
+  function hasAllCommentObjectKeys(res) {
+    res.body.should.have.properties(['movieID', 'text']);
+  }
+
+  function movieWithIDnotExist(res, id) {
+    res.body.should.have.property('error');
+    res.body.error.should.match(/Movie with ID \w+ does not exist in database!/);
+  }
+
+  async function commentExistsInDB(id) {
+    let comment;
+    await Comment.findById(id, (err, product) => { comment = product; });
+    should(comment).not.be.undefined();
+  }
+
   describe('/POST', () => {
-    it('it should be successful POST request', (done) => {
+
+    beforeEach(() => {
+      clearCollectionDB('comments');
+      clearCollectionDB('movies');
+    });
+
+    it('request should contain movieID and comment text', (done) => {
       request(app)
         .post('/comments')
+        .send('movieID=123')
+        .send('text=First!:D')
+        .expect(200, done);
+    });
+    it('server should response with error when there is no movieID in request', (done) => {
+      request(app)
+        .post('/comments')
+        .send('text=First!:D')
+        .expect(400, done);
+    });
+    it('server should response with error when there is no comment text in request', (done) => {
+      request(app)
+        .post('/comments')
+        .send('movieID=123')
+        .expect(400, done);
+    });
+    it('server should save comment to DB and return it in response when request is correct and DB contains movie with requested ID', (done) => {
+      let id;
+      request(app)
+        .post('/movies')
+        .send('title=titanic')
         .expect(200)
-        .end((err, res) => {
-          if (err) return done(err);
-          done();
+        .expect((res) => {
+          id = res.body._id; // eslint-disable-line no-underscore-dangle
+        })
+        .end(() => {
+          request(app)
+            .post('/comments')
+            .send(`movieID=${id}`)
+            .send('text=First!:D')
+            .expect(200)
+            .expect(hasAllCommentObjectKeys)
+            .end(() => {
+              commentExistsInDB();
+              done();
+            });
+        });
+    });
+    it('server should response with error when there is no movie with requested ID in DB', (done) => {
+      request(app)
+        .post('/movies')
+        .send('title=titanic')
+        .expect(200)
+        .end(() => {
+          request(app)
+            .post('/comments')
+            .send('movieID=123')
+            .send('text=First!:D')
+            .expect(200)
+            .expect(movieWithIDnotExist)
+            .end(done);
         });
     });
   });
