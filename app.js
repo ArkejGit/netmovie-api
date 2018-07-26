@@ -8,8 +8,11 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
+// Config DB
+const db = require('./config/database');
+
 // Connect to mongoose
-mongoose.connect('mongodb://localhost:27017/netmovie', {
+mongoose.connect(db.mongoURL, {
   useNewUrlParser: true,
 })
   .then(() => console.log('Connected do MongoDB'))
