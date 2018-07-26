@@ -4,7 +4,9 @@ process.env.NODE_ENV = 'test';
 
 const request = require('supertest');
 const should = require('should');
+const mongoose = require('mongoose');
 const app = require('../app');
+const db = require('../config/database');
 
 // MOVIES
 describe('movies', () => {
@@ -31,7 +33,29 @@ describe('movies', () => {
     res.body.should.have.property('error', 'Movie not found!');
   }
 
+  function movieAlreadyExists(res) {
+    res.body.should.have.property('error', 'Movie already exists in database!');
+  }
+
+  function clearCollectionDB(collectionName) {
+    mongoose.connection.db.listCollections({ name: collectionName })
+      .next((e, collinfo) => {
+        if (collinfo) {
+          mongoose.connection.collections[collinfo.name].drop((err) => {
+            if (err) console.log(err);
+          });
+        }
+      });
+  }
+
   describe('/POST', () => {
+
+    before(() => mongoose.connect(db.mongoURL, { useNewUrlParser: true }));
+
+    beforeEach(() => clearCollectionDB('movies'));
+
+    after(() => clearCollectionDB('movies'));
+
     it('request should contain title', (done) => {
       request(app)
         .post('/movies')
@@ -57,6 +81,20 @@ describe('movies', () => {
         .expect(200)
         .expect(hasAllMovieObjectKeys)
         .end(done);
+    });
+    it('server should response with "movie already exists in db" error when its true', (done) => {
+      request(app)
+        .post('/movies')
+        .send('title=titanic')
+        .expect(200)
+        .end(() => {
+          request(app)
+            .post('/movies')
+            .send('title=titanic')
+            .expect(movieAlreadyExists)
+            .expect(200)
+            .end(done);
+        });
     });
     it('server should response with "movie not found" error when there is no movie with specific title', (done) => {
       request(app)
