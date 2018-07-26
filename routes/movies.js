@@ -18,7 +18,9 @@ const Movie = mongoose.model('movies');
 
 // GET
 router.get('/', (req, res) => {
-  res.json({ route: 'GET movies' });
+  // fetch movies from DB and send response
+  Movie.find({})
+    .then(movies => res.json(movies));
 });
 
 // POST

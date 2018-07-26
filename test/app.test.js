@@ -11,20 +11,54 @@ const db = require('../config/database');
 // MOVIES
 describe('movies', () => {
 
+  function clearCollectionDB(collectionName) {
+    mongoose.connection.db.listCollections({ name: collectionName })
+      .next((e, collinfo) => {
+        if (collinfo) {
+          mongoose.connection.collections[collinfo.name].drop((err) => {
+            if (err) console.log(err);
+          });
+        }
+      });
+  }
+
+  before(() => mongoose.connect(db.mongoURL, { useNewUrlParser: true }));
+
+  after(() => clearCollectionDB('movies'));
+
+  // GET
   describe('/GET', () => {
-    it('it should be successful GET request', (done) => {
+
+    beforeEach(() => clearCollectionDB('movies'));
+
+    it('server should response with all movies that are in database', (done) => {
       request(app)
-        .get('/movies')
+        .post('/movies')
+        .send('title=titanic')
         .expect(200)
-        .end((err, res) => {
-          if (err) return done(err);
-          done();
+        .end(() => {
+          request(app)
+            .post('/movies')
+            .send('title=hateful eight')
+            .expect(200)
+            .end(() => {
+              request(app)
+                .post('/movies')
+                .send('title=12 angry men')
+                .expect(200)
+                .end(() => {
+                  request(app)
+                    .get('/movies')
+                    .expect(200)
+                    .expect(res => res.body.should.have.length(3))
+                    .end(done);
+                });
+            });
         });
     });
   });
 
   // POST
-
   function hasAllMovieObjectKeys(res) {
     res.body.should.have.properties(['title', 'year', 'released', 'runtime', 'genre']);
   }
@@ -37,24 +71,9 @@ describe('movies', () => {
     res.body.should.have.property('error', 'Movie already exists in database!');
   }
 
-  function clearCollectionDB(collectionName) {
-    mongoose.connection.db.listCollections({ name: collectionName })
-      .next((e, collinfo) => {
-        if (collinfo) {
-          mongoose.connection.collections[collinfo.name].drop((err) => {
-            if (err) console.log(err);
-          });
-        }
-      });
-  }
-
   describe('/POST', () => {
 
-    before(() => mongoose.connect(db.mongoURL, { useNewUrlParser: true }));
-
     beforeEach(() => clearCollectionDB('movies'));
-
-    after(() => clearCollectionDB('movies'));
 
     it('request should contain title', (done) => {
       request(app)
