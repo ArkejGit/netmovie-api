@@ -29,20 +29,31 @@ router.post('/', (req, res) => {
     return res.status(400).send({ errors });
   }
 
-  // fetch data from external API
   const { title } = req.body;
+
+  // fetch data from external API
   axios.get(URL, {
     params: {
       apikey: API_KEY,
       t: title,
     },
   })
-    .then((apiRes) => {
+    .then(async (apiRes) => {
       const {
         Response, Error, Title, Year, Released, Runtime, Genre,
       } = apiRes.data;
-      // check if movie exists
+
+      // check if movie exists in external DB
       if (Response === 'False') return res.json({ error: Error });
+
+      // chceck if movie already exists in own DB
+      let movieExist = false;
+      await Movie.findOne({ title: Title }, (err, movie) => {
+        if (err) console.log(err);
+        if (movie !== null) movieExist = true;
+      });
+      if (movieExist) return res.json({ error: 'Movie already exists in database!' });
+
       const movie = {
         title: Title,
         year: Year,
