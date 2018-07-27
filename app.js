@@ -20,7 +20,7 @@ mongoose.connect(db.mongoURL, {
   .then(() => console.info('Connected do MongoDB'))
   .catch(err => handleError(err));
 
-app.get('/', (req, res) => res.json({ message: 'Hello!' }));
+app.get('/', (req, res) => res.sendFile(`${__dirname}/index.html`));
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
