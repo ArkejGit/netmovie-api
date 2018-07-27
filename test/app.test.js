@@ -146,14 +146,67 @@ describe('comments', () => {
 
   // GET
   describe('/GET', () => {
-    it('it should be successful GET request', (done) => {
+
+    let titanicID;
+    let hateful8ID;
+    before((done) => {
+      request(app)
+        .post('/movies')
+        .send('title=titanic')
+        .expect(200)
+        .expect((res) => {
+          titanicID = res.body._id; // eslint-disable-line no-underscore-dangle
+        })
+        .end(() => {
+          request(app)
+            .post('/comments')
+            .send(`movieID=${titanicID}`)
+            .send('text=titanic comment')
+            .expect(200)
+            .end(() => {
+              request(app)
+                .post('/movies')
+                .send('title=hateful eight')
+                .expect(200)
+                .expect((res) => {
+                  hateful8ID = res.body._id; // eslint-disable-line no-underscore-dangle
+                })
+                .end(() => {
+                  request(app)
+                    .post('/comments')
+                    .send(`movieID=${hateful8ID}`)
+                    .send('text=hateful eight comment')
+                    .expect(200)
+                    .end(done);
+                });
+            });
+        });
+    });
+
+    it('should fetch all comments from DB when no param is set', (done) => {
       request(app)
         .get('/comments')
         .expect(200)
-        .end((err, res) => {
-          if (err) return done(err);
-          done();
-        });
+        .expect(res => res.body.should.have.length(2))
+        .end(done);
+    });
+
+    it('should fetch comments associated with specific movie according to passed movieID', (done) => {
+      request(app)
+        .get('/comments')
+        .query({ movieID: titanicID })
+        .expect(200)
+        .expect(res => res.body.should.have.length(1))
+        .end(done);
+    });
+
+    it('should response with empty array when there is no movie with passed ID', (done) => {
+      request(app)
+        .get('/comments')
+        .query({ movieID: '123abc' })
+        .expect(200)
+        .expect(res => res.body.should.have.length(0))
+        .end(done);
     });
   });
 
