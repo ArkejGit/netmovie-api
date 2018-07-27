@@ -5,6 +5,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 
 const { moviesPostRequestErrors } = require('./validation/requestValidation');
+const { checkIfExistsInDB } = require('../helpers/mongoDBhelpers');
 
 const router = express.Router();
 
@@ -49,12 +50,11 @@ router.post('/', (req, res) => {
       if (Response === 'False') return res.json({ error: Error });
 
       // chceck if movie already exists in own DB
-      let movieExist = false;
-      await Movie.findOne({ title: Title }, (err, movie) => {
-        if (err) console.log(err);
-        if (movie !== null) movieExist = true;
+      let movieExists = false;
+      await checkIfExistsInDB(Movie, { title: Title }).then((exists) => {
+        movieExists = exists === true;
       });
-      if (movieExist) return res.json({ error: 'Movie already exists in database!' });
+      if (movieExists) return res.json({ error: 'Movie already exists in database!' });
 
       const movie = {
         title: Title,

@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const { commentsPostRequestErrors } = require('./validation/requestValidation');
+const { checkIfExistsInDB } = require('../helpers/mongoDBhelpers');
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.get('/', (req, res) => {
 });
 
 // POST
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   // validation
   const errors = commentsPostRequestErrors(req);
   if (errors.length !== 0) {
@@ -34,17 +35,23 @@ router.post('/', (req, res) => {
   const comment = { movieID, text };
 
   // check if movie with such ID exists
-  Movie.findById(comment.movieID, (e, movie) => {
-    if (movie !== undefined) {
-      // save comment to DB and send response
-      new Comment(comment)
-        .save((err, product) => {
-          if (err) console.log(err);
-          res.json(product);
-        });
+  let movieExists = false;
+  await checkIfExistsInDB(Movie, { _id: comment.movieID }).then((exists) => {
+    movieExists = exists === true;
+  })
+    .catch(err => console.log(err));
+
+  if (movieExists) {
+    // save comment to DB and send response
+    new Comment(comment)
+      .save((err, product) => {
+        if (err) console.log(err);
+        res.json(product);
+      });
+  } else {
     // send response with error if movie does not exist
-    } else res.json({ error: `Movie with ID ${comment.movieID} does not exist in database!` });
-  });
+    res.json({ error: `Movie with ID ${comment.movieID} does not exist in database!` });
+  }
 });
 
 module.exports = router;

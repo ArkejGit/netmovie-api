@@ -12,18 +12,7 @@ require('../models/Comment');
 
 const Comment = mongoose.model('comments');
 
-async function connectToDB() {
-  await mongoose.connect(db.mongoURL, { useNewUrlParser: true });
-}
-
-function clearCollectionDB(collectionName) {
-  mongoose.connection.db.listCollections({ name: collectionName })
-    .next((e, collinfo) => {
-      if (collinfo) {
-        mongoose.connection.collections[collinfo.name].drop();
-      }
-    });
-}
+const { connectToDB, clearCollectionDB, checkIfExistsInDB } = require('../helpers/mongoDBhelpers');
 
 // MOVIES
 describe('movies', () => {
@@ -137,7 +126,9 @@ describe('movies', () => {
 // COMMENTS
 describe('comments', () => {
 
-  before(() => connectToDB());
+  before(() => {
+    connectToDB();
+  });
 
   after(() => {
     clearCollectionDB('comments');
@@ -221,14 +212,16 @@ describe('comments', () => {
   }
 
   async function commentExistsInDB(id) {
-    let comment;
-    await Comment.findById(id, (err, product) => { comment = product; });
-    should(comment).not.be.undefined();
+    await checkIfExistsInDB(Comment, { movieID: id }).then((exists) => {
+      should(exists).be.true();
+    });
+
   }
+
 
   describe('/POST', () => {
 
-    beforeEach(() => {
+    afterEach(() => {
       clearCollectionDB('comments');
       clearCollectionDB('movies');
     });
@@ -269,7 +262,8 @@ describe('comments', () => {
             .expect(200)
             .expect(hasAllCommentObjectKeys)
             .end(() => {
-              commentExistsInDB();
+              commentExistsInDB(id)
+                .catch(err => console.log(err));
               done();
             });
         });
