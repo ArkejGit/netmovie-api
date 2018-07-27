@@ -19,9 +19,9 @@ describe('movies', () => {
   // GET
   describe('/GET', () => {
 
-    beforeEach(() => clearCollectionDB('movies'));
+    before((done) => {
+      clearCollectionDB('movies');
 
-    it('server should response with all movies that are in database', (done) => {
       request(app)
         .post('/movies')
         .send('title=titanic')
@@ -36,15 +36,34 @@ describe('movies', () => {
                 .post('/movies')
                 .send('title=12 angry men')
                 .expect(200)
-                .end(() => {
-                  request(app)
-                    .get('/movies')
-                    .expect(200)
-                    .expect(res => res.body.should.have.length(3))
-                    .end(done);
-                });
+                .end(done);
             });
         });
+    });
+
+    it('having no params server should response with all movies that are in database', (done) => {
+      request(app)
+        .get('/movies')
+        .expect(200)
+        .expect(res => res.body.should.have.length(3))
+        .end(done);
+    });
+    it('having params server should filter movies', (done) => {
+      request(app)
+        .get('/movies')
+        .query({ title: 'HATEFUL' })
+        .expect(200)
+        .expect(res => res.body.should.have.length(1))
+        .end(done);
+    });
+    it('having param "sort" server should sort movies', (done) => {
+      request(app)
+        .get('/movies')
+        .query({ sort: 'year' })
+        .expect(200)
+        .expect(res => res.body.should.have.length(3))
+        .expect(res => res.body.map(movie => movie.title).should.be.eql(['12 Angry Men', 'Titanic', 'The Hateful Eight']))
+        .end(done);
     });
   });
 

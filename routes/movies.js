@@ -20,8 +20,17 @@ const Movie = mongoose.model('movies');
 
 // GET
 router.get('/', (req, res) => {
+  const { sort, ...query } = req.query;
+
+  // change every query value into regex
+  Object.keys(query).map((key) => {
+    query[key] = { $regex: new RegExp(`.*${query[key]}.*`, 'i') };
+    return query[key];
+  });
+
   // fetch movies from DB and send response
-  Movie.find({})
+  Movie.find(query)
+    .sort(sort)
     .then(movies => res.json(movies));
 });
 
