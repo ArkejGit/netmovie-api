@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+const { handleError } = require('./helpers/errorHandling');
+
 const app = express();
 
 const port = process.env.PORT || 5000;
@@ -15,8 +17,8 @@ const db = require('./config/database');
 mongoose.connect(db.mongoURL, {
   useNewUrlParser: true,
 })
-  .then(() => console.log('Connected do MongoDB'))
-  .catch(err => console.log(err));
+  .then(() => handleError('Connected do MongoDB'))
+  .catch(err => handleError(err));
 
 app.get('/', (req, res) => res.json({ message: 'Hello!' }));
 
@@ -33,7 +35,7 @@ app.use('/movies', movies);
 app.use('/comments', comments);
 
 app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+  handleError(`Server started on port ${port}`);
 });
 
 module.exports = app;

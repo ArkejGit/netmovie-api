@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const { commentsPostRequestErrors } = require('./validation/requestValidation');
 const { checkIfExistsInDB } = require('../helpers/mongoDBhelpers');
+const { handleError } = require('../helpers/errorHandling');
 
 const router = express.Router();
 
@@ -39,13 +40,13 @@ router.post('/', async (req, res) => {
   await checkIfExistsInDB(Movie, { _id: comment.movieID }).then((exists) => {
     movieExists = exists === true;
   })
-    .catch(err => console.log(err));
+    .catch(err => handleError(err));
 
   if (movieExists) {
     // save comment to DB and send response
     new Comment(comment)
       .save((err, product) => {
-        if (err) console.log(err);
+        if (err) handleError(err);
         res.json(product);
       });
   } else {

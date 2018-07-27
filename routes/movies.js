@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const { moviesPostRequestErrors } = require('./validation/requestValidation');
 const { checkIfExistsInDB } = require('../helpers/mongoDBhelpers');
+const { handleError } = require('../helpers/errorHandling');
 
 const router = express.Router();
 
@@ -66,11 +67,11 @@ router.post('/', (req, res) => {
       // save to DB and send response
       new Movie(movie)
         .save((err, product) => {
-          if (err) console.log(err);
+          if (err) handleError(err);
           res.json(product);
         });
     })
-    .catch(err => console.log(err));
+    .catch(err => handleError(err));
 });
 
 module.exports = router;

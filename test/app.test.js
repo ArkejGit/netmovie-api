@@ -13,6 +13,7 @@ require('../models/Comment');
 const Comment = mongoose.model('comments');
 
 const { connectToDB, clearCollectionDB, checkIfExistsInDB } = require('../helpers/mongoDBhelpers');
+const { handleError } = require('../helpers/errorHandling');
 
 // MOVIES
 describe('movies', () => {
@@ -263,7 +264,7 @@ describe('comments', () => {
             .expect(hasAllCommentObjectKeys)
             .end(() => {
               commentExistsInDB(id)
-                .catch(err => console.log(err));
+                .catch(err => handleError(err));
               done();
             });
         });
