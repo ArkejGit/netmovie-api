@@ -17,7 +17,7 @@ const db = require('./config/database');
 mongoose.connect(db.mongoURL, {
   useNewUrlParser: true,
 })
-  .then(() => handleError('Connected do MongoDB'))
+  .then(() => console.info('Connected do MongoDB'))
   .catch(err => handleError(err));
 
 app.get('/', (req, res) => res.json({ message: 'Hello!' }));
