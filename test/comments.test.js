@@ -64,7 +64,7 @@ describe('comments', () => {
         });
     });
 
-    it('should fetch all comments from DB when no param is set', (done) => {
+    it('GET /comments should fetch all comments from DB', (done) => {
       request(app)
         .get('/comments')
         .expect(200)
@@ -72,19 +72,17 @@ describe('comments', () => {
         .end(done);
     });
 
-    it('should fetch comments associated with specific movie according to passed movieID', (done) => {
+    it('GET /comments/:movieID should fetch comments associated with specific movie according to passed movieID', (done) => {
       request(app)
-        .get('/comments')
-        .query({ movieID: titanicID })
+        .get(`/comments/${titanicID}`)
         .expect(200)
         .expect(res => res.body.should.have.length(1))
         .end(done);
     });
 
-    it('should response with empty array when there is no movie with passed ID', (done) => {
+    it('GET /comments/:movieID should response with empty array when there is no movie with passed ID', (done) => {
       request(app)
-        .get('/comments')
-        .query({ movieID: '123abc' })
+        .get('/comments/123abc')
         .expect(200)
         .expect(res => res.body.should.have.length(0))
         .end(done);

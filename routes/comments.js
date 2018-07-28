@@ -18,7 +18,12 @@ const Comment = mongoose.model('comments');
 
 // GET
 router.get('/', (req, res) => {
-  const movieID = req.query.movieID === undefined ? {} : { movieID: req.query.movieID };
+  Comment.find({})
+    .then(comments => res.json(comments));
+});
+
+router.get('/:movieID', (req, res) => {
+  const movieID = req.params;
 
   Comment.find(movieID)
     .then(comments => res.json(comments));
