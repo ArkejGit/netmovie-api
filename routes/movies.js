@@ -31,7 +31,8 @@ router.get('/', (req, res) => {
   // fetch movies from DB and send response
   Movie.find(query)
     .sort(sort)
-    .then(movies => res.json(movies));
+    .then(movies => res.json(movies))
+    .catch(err => handleError(err));
 });
 
 // POST

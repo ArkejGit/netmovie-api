@@ -19,14 +19,16 @@ const Comment = mongoose.model('comments');
 // GET
 router.get('/', (req, res) => {
   Comment.find({})
-    .then(comments => res.json(comments));
+    .then(comments => res.json(comments))
+    .catch(err => handleError(err));
 });
 
 router.get('/:movieID', (req, res) => {
   const movieID = req.params;
 
   Comment.find(movieID)
-    .then(comments => res.json(comments));
+    .then(comments => res.json(comments))
+    .catch(err => handleError(err));
 });
 
 // POST
