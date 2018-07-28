@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
   // validation
   const errors = moviesPostRequestErrors(req);
   if (errors.length !== 0) {
-    return res.status(400).send({ errors });
+    return res.status(400).json({ errors });
   }
 
   const { title } = req.body;
@@ -57,14 +57,14 @@ router.post('/', (req, res) => {
       } = apiRes.data;
 
       // check if movie exists in external DB
-      if (Response === 'False') return res.json({ error: Error });
+      if (Response === 'False') return res.status(400).json({ error: Error });
 
       // chceck if movie already exists in own DB
       let movieExists = false;
       await checkIfExistsInDB(Movie, { title: Title }).then((exists) => {
         movieExists = exists === true;
       });
-      if (movieExists) return res.json({ error: 'Movie already exists in database!' });
+      if (movieExists) return res.status(400).json({ error: 'Movie already exists in database!' });
 
       const movie = {
         title: Title,

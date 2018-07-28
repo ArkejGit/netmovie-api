@@ -114,13 +114,6 @@ describe('comments', () => {
       clearCollectionDB('movies');
     });
 
-    it('request should contain movieID and comment text', (done) => {
-      request(app)
-        .post('/comments')
-        .send('movieID=123')
-        .send('text=First!:D')
-        .expect(200, done);
-    });
     it('server should response with error when there is no movieID in request', (done) => {
       request(app)
         .post('/comments')
@@ -166,7 +159,7 @@ describe('comments', () => {
             .post('/comments')
             .send('movieID=123')
             .send('text=First!:D')
-            .expect(200)
+            .expect(400)
             .expect(movieWithIDnotExist)
             .end(done);
         });

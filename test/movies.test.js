@@ -120,7 +120,7 @@ describe('movies', () => {
             .post('/movies')
             .send('title=titanic')
             .expect(movieAlreadyExists)
-            .expect(200)
+            .expect(400)
             .end(done);
         });
     });
@@ -128,7 +128,7 @@ describe('movies', () => {
       request(app)
         .post('/movies')
         .send('title=mission invisible')
-        .expect(200)
+        .expect(400)
         .expect(movieNotFound)
         .end(done);
     });

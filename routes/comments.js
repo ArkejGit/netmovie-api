@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
   // validation
   const errors = commentsPostRequestErrors(req);
   if (errors.length !== 0) {
-    return res.status(400).send({ errors });
+    return res.status(400).json({ errors });
   }
 
   const comment = req.body;
@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
       });
   } else {
     // send response with error if movie does not exist
-    res.json({ error: `Movie with ID ${comment.movieID} does not exist in database!` });
+    res.status(400).json({ error: `Movie with ID ${comment.movieID} does not exist in database!` });
   }
 });
 
