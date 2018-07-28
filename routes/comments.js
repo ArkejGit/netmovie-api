@@ -37,8 +37,7 @@ router.post('/', async (req, res) => {
     return res.status(400).send({ errors });
   }
 
-  const { movieID, text } = req.body;
-  const comment = { movieID, text };
+  const comment = req.body;
 
   // check if movie with such ID exists
   let movieExists = false;
