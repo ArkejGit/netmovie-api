@@ -139,5 +139,8 @@ You can sort list passing param `sort`, for example:
 ]
 ```
 
-You can filter list passing param `movieID`, for example:
-` { "movieID": "5b5b484e3405190020ccd74d" } `
+### `/comments/:movieID`
+
+**GET**
+
+Returns comments associated with movie according to passed *movieID*
