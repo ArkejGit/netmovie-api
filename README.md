@@ -151,7 +151,7 @@ Returns comments associated with movie according to passed *movieID*
 - [ ] using console.log in production code 
 - [ ] requiring routes files in the middle of the file 
 - [ ] all required files should be listed on top 
-- [ ] .eslintr.json should be place in main directory instead of config 
+- [x] .eslintr.json should be place in main directory instead of config 
 - [ ] credentials list API_KEY, urls should be placed in env file 
 - [ ] empty handleError method with comment inside 
 - [ ] connection to DB doubled: both in mongoDBhelpers and in app.js 

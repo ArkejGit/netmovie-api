@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "lint": "eslint -c config/.eslintrc.json **/*.js",
+    "lint": "eslint **/*.js",
     "test": "mocha --timeout 10000 --exit"
   },
   "pre-commit": [
