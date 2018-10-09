@@ -144,3 +144,18 @@ You can sort list passing param `sort`, for example:
 **GET**
 
 Returns comments associated with movie according to passed *movieID*
+
+## Bugs to fix
+
+- [ ] misplaced connection to DB and using callbacks 
+- [ ] using console.log in production code 
+- [ ] requiring routes files in the middle of the file 
+- [ ] all required files should be listed on top 
+- [ ] .eslintr.json should be place in main directory instead of config 
+- [ ] credentials list API_KEY, urls should be placed in env file 
+- [ ] empty handleError method with comment inside 
+- [ ] connection to DB doubled: both in mongoDBhelpers and in app.js 
+- [ ] not using try-catch to handle errors 
+- [ ] using todether callbacks, promises and async-await 
+- [ ] too few req validations - comments in the production code 
+- [ ] controllers functionality placed in routes directory​
