@@ -157,5 +157,6 @@ Returns comments associated with movie according to passed *movieID*
 - [ ] connection to DB doubled: both in mongoDBhelpers and in app.js 
 - [ ] not using try-catch to handle errors 
 - [ ] using todether callbacks, promises and async-await 
-- [ ] too few req validations - comments in the production code 
+- [ ] too few req validations 
+- [ ] comments in the production code 
 - [ ] controllers functionality placed in routes directory​
